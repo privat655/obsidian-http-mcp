@@ -33,7 +33,17 @@ export class ObsidianClient {
     this.validatePath(path);
     const encoded = this.encodePath(path);
     const response = await this.client.get(`/vault/${encoded}`);
-    return response.data;
+
+    // Obsidian API returns { files: [...] } where files contains BOTH files and folders
+    // Folders end with '/', files do not
+    const items: string[] = response.data.files || [];
+
+    const files = items.filter(item => !item.endsWith('/'));
+    const folders = items
+      .filter(item => item.endsWith('/'))
+      .map(folder => folder.slice(0, -1)); // Remove trailing '/'
+
+    return { files, folders };
   }
 
   async readFile(path: string): Promise<string> {
