@@ -42,6 +42,97 @@
 
 ---
 
+### v1.0.1 - Multi-vault & MCP Resources (Day 2) 🔥 CRITICAL
+
+**Goal**: Support multiple vaults + full MCP spec compliance
+
+#### 1. Multi-vault Support
+
+**Why**: Isolate personal/professional/projects, single server instance
+
+**Config `.env`**:
+```bash
+VAULTS=[{"name":"perso","apiKey":"key1","baseUrl":"http://127.0.0.1:27123"},{"name":"business","apiKey":"key2","baseUrl":"http://127.0.0.1:27124"}]
+PORT=3000
+```
+
+**Implementation**:
+
+1. `types/index.ts` - Add VaultConfig, Config with vaults[]
+2. `config.ts` - Parse JSON array from env
+3. `vault-manager.ts` - NEW: Map<name, ObsidianClient>
+4. `index.ts` - Instantiate VaultManager
+5. `http.ts` - Add `vault` param to all tools
+
+**VaultManager**:
+```typescript
+class VaultManager {
+  private clients = new Map<string, ObsidianClient>();
+
+  getClient(vault: string): ObsidianClient {
+    if (!this.clients.has(vault)) throw new Error(`Unknown vault: ${vault}`);
+    return this.clients.get(vault)!;
+  }
+}
+```
+
+**Usage**: `list_dir({ vault: "perso", path: "TECH/" })`
+
+**Effort**: ~150 lines, 5 files modified
+
+#### 2. MCP Resources
+
+**Why**: MCP spec requires tools + resources. Stable URIs for notes.
+
+**Difference**:
+- Tools = actions (read, write)
+- Resources = data (notes exposed via URI)
+
+**URIs**: `obsidian://perso/TECH/note.md`, `obsidian://business/meeting.md`
+
+**Implementation**:
+
+1. `http.ts` - Add handlers:
+   - `ListResourcesRequestSchema` → list all .md files
+   - `ReadResourceRequestSchema` → read by URI
+   - Capabilities: `resources: {}`
+
+2. `resources/list.ts` - NEW
+3. `resources/read.ts` - NEW
+
+**Code**:
+```typescript
+// List
+resources: files.map(f => ({
+  uri: `obsidian://${vault}/${f.path}`,
+  name: f.name,
+  mimeType: "text/markdown"
+}))
+
+// Read
+const [vault, ...path] = uri.replace('obsidian://', '').split('/');
+const client = vaultManager.getClient(vault);
+return client.readFile(path.join('/'));
+```
+
+**Benefits**: Lazy loading, client-side caching, MCP compliance
+
+**Effort**: ~200 lines, 3 files created
+
+**Dependency**: Multi-vault required (URIs include vault name)
+
+**Checklist**:
+- [ ] Multi-vault: VaultManager
+- [ ] Multi-vault: vault param in all tools
+- [ ] Resources: ListResources handler
+- [ ] Resources: ReadResource handler
+- [ ] Tests E2E
+- [ ] README update
+
+**Timeline**: 1 day (tomorrow)
+
+---
+
 ### v1.1 - Refinements (Week 2)
 
 **Goal**: Polish UX, add missing features
