@@ -1,5 +1,6 @@
 import type { ObsidianClient } from '../client/obsidian.js';
 import type { ToolResult, SearchMatch } from '../types/index.js';
+import { walkVault } from './find.js';
 
 export async function search(
   client: ObsidianClient,
@@ -18,8 +19,8 @@ export async function search(
       };
     }
 
-    const { files } = await client.listVault('');
-    const mdFiles = files.filter((f) => f.endsWith('.md'));
+    const allFiles = await walkVault(client);
+    const mdFiles = allFiles.filter((f) => f.endsWith('.md'));
 
     const matches: SearchMatch[] = [];
     const maxResults = args.max_results || 100;
