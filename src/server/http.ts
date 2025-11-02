@@ -11,7 +11,7 @@ import { readFile } from '../tools/read.js';
 import { writeFile } from '../tools/write.js';
 import { search } from '../tools/search.js';
 import { moveFile } from '../tools/move.js';
-import { deleteFile } from '../tools/delete.js';
+import { deleteFile, deleteFolder } from '../tools/delete.js';
 import { findFiles } from '../tools/find.js';
 
 export function createHttpServer(client: ObsidianClient, port: number) {
@@ -173,6 +173,28 @@ export function createHttpServer(client: ObsidianClient, port: number) {
           },
         },
         {
+          name: 'delete_folder',
+          description: 'Delete all files in a folder recursively. By default moves to .trash-http-mcp/ (soft delete). Use permanent=true for irreversible deletion. Empty folders remain (API limitation).',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'Path to folder'
+              },
+              confirm: {
+                type: 'boolean',
+                description: 'Must be true (safety check)'
+              },
+              permanent: {
+                type: 'boolean',
+                description: 'If true, permanently delete. Default: false (trash)'
+              },
+            },
+            required: ['path', 'confirm'],
+          },
+        },
+        {
           name: 'find_files',
           description: 'Search files in vault with fuzzy matching. Use this when you don\'t know the exact filename.',
           inputSchema: {
@@ -224,6 +246,9 @@ export function createHttpServer(client: ObsidianClient, port: number) {
         break;
       case 'delete_file':
         result = await deleteFile(client, args as any);
+        break;
+      case 'delete_folder':
+        result = await deleteFolder(client, args as any);
         break;
       case 'find_files':
         result = await findFiles(client, args as any);

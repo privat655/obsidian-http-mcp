@@ -13,7 +13,7 @@ export function invalidateFilesCache(): void {
 }
 
 // Recursively walk vault tree and collect all file paths
-async function walkVault(client: ObsidianClient, path: string = ''): Promise<string[]> {
+export async function walkVault(client: ObsidianClient, path: string = ''): Promise<string[]> {
   const { files, folders } = await client.listVault(path);
 
   // Build full paths for files in current directory
