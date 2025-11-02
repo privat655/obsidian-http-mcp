@@ -16,7 +16,7 @@ import { findFiles } from '../tools/find.js';
 
 export function createHttpServer(client: ObsidianClient, port: number) {
   const app = express();
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
 
   // Create MCP Server instance (singleton for all requests)
   const mcpServer = new Server(

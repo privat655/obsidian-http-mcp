@@ -31,15 +31,15 @@ async function walkVault(client: ObsidianClient, path: string = ''): Promise<str
     .flat();
 
   // Log failed folder scans (continue with partial results)
-  results
-    .filter(r => r.status === 'rejected')
-    .forEach(r => {
-      const error = (r as PromiseRejectedResult).reason;
-      console.error('Failed to scan folder:', {
-        path,
-        error: error instanceof Error ? error.message : error,
-      });
+  const failedCount = results.filter(r => r.status === 'rejected').length;
+  if (failedCount > 0) {
+    const firstError = (results.find(r => r.status === 'rejected') as PromiseRejectedResult)?.reason;
+    console.error('Failed to scan folders:', {
+      totalFolders: folders.length,
+      failedCount,
+      error: firstError instanceof Error ? firstError.message : firstError,
     });
+  }
 
   return [...fullPathFiles, ...subFiles];
 }
