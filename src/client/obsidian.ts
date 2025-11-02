@@ -31,7 +31,9 @@ export class ObsidianClient {
 
   async listVault(path: string = ''): Promise<{ files: string[]; folders: string[] }> {
     this.validatePath(path);
-    const encoded = this.encodePath(path);
+    // Add trailing / for directory listing (API requirement)
+    const dirPath = path && !path.endsWith('/') ? `${path}/` : path;
+    const encoded = this.encodePath(dirPath);
     const response = await this.client.get(`/vault/${encoded}`);
 
     // Obsidian API returns { files: [...] } where files contains BOTH files and folders
