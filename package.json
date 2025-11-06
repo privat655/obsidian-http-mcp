@@ -34,6 +34,17 @@
   },
   "homepage": "https://github.com/NasAndNora/obsidian-http-mcp#readme",
   "license": "MIT",
+  "files": [
+    "dist/",
+    "README.md",
+    "CHANGELOG.md",
+    "TECHNICAL.md",
+    "TROUBLESHOOTING.md",
+    "SECURITY.md",
+    "ROADMAP.md",
+    "CONTRIBUTING.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.20.2",
     "@types/express": "^5.0.5",
