@@ -18,6 +18,7 @@
 **This server is designed for trusted network environments** (localhost, LAN, VPN).
 
 For production deployment:
+
 - Use a reverse proxy (nginx/caddy) with authentication
 - Enable HTTPS/TLS
 - Configure rate limiting
