@@ -32,10 +32,7 @@ First HTTP-native MCP server for Obsidian. Solves stdio transport failures in Cl
 
 ### STEP 2: Install & Setup
 
-**Install on the same system as Obsidian:**
-
-- Windows Obsidian → Install on **Windows PowerShell**
-- Linux Obsidian → Install on **Linux terminal**
+**Install where Obsidian is installed:**
 
 ```bash
 npm install -g obsidian-http-mcp
@@ -46,9 +43,11 @@ obsidian-http-mcp --setup
 
 **Config saved to `~/.obsidian-mcp/config.json`** - you won't need to type this again.
 
+> **Cross-platform users:** If Claude runs on WSL2 but Obsidian on Windows, install the server on Windows.
+
 ### STEP 3: Start Server
 
-**On the same system as Obsidian:**
+**Where you installed (same system as Obsidian):**
 
 ```bash
 obsidian-http-mcp
@@ -58,24 +57,28 @@ obsidian-http-mcp
 
 ### STEP 4: Connect Claude CLI
 
-**Option 1: Same machine** (Claude and Obsidian both on Windows OR both on Linux)
+**If Claude runs where the server is installed:**
 
 ```bash
 claude mcp add -s user --transport http obsidian http://localhost:3000/mcp
 ```
 
-**Option 2: Cross-platform** (Claude on WSL2, Obsidian on Windows)
+**If Claude runs elsewhere** (e.g., Claude on WSL2, server on Windows):
 
-1. Find Windows IP on **Windows PowerShell**:
+1. Find server's IP address on **the system where the server runs**:
 
 ```powershell
+# Windows PowerShell
 ipconfig | findstr "vEthernet"
+
+# Linux
+ip addr show | grep inet
 ```
 
-1. Connect from **WSL2":
+2. Connect from **where Claude CLI runs**:
 
 ```bash
-claude mcp add -s user --transport http obsidian http://YOUR_WINDOWS_IP:3000/mcp
+claude mcp add -s user --transport http obsidian http://SERVER_IP:3000/mcp
 ```
 
 ---

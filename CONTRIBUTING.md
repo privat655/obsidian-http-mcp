@@ -50,13 +50,15 @@ OBSIDIAN_BASE_URL=http://127.0.0.1:27123
 PORT=3000
 ```
 
-WSL2 (dev on WSL2, Obsidian on Windows):
+Dev on WSL2, Obsidian on Windows (testing only):
 
 ```env
 OBSIDIAN_API_KEY=your_actual_api_key_here
 OBSIDIAN_BASE_URL=http://YOUR_WINDOWS_IP:27123
 PORT=3000
 ```
+
+> **Note:** This `.env` is for temporary dev testing only. Production usage requires the server to run on the same system as Obsidian (Windows in this case).
 
 Find Windows IP: `ipconfig | findstr "vEthernet"` on Windows PowerShell
 
