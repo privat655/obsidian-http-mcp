@@ -1,24 +1,60 @@
 # Obsidian HTTP MCP
 
-> **The first HTTP-native MCP server for Obsidian that solves Claude Code CLI stdio bugs** ([#3071](https://github.com/anthropics/claude-code/issues/3071), [#9176](https://github.com/anthropics/claude-code/issues/9176))
+> **Finally use Claude Code to manage your Obsidian notes - no more crashes or broken pipes**
+
+The first HTTP-native MCP server for Obsidian that solves stdio transport bugs affecting Claude Code CLI ([#3071](https://github.com/anthropics/claude-code/issues/3071), [#9176](https://github.com/anthropics/claude-code/issues/9176), [#9662](https://github.com/anthropics/claude-code/issues/9662))
 
 **Also compatible with**: Claude Desktop, Codex, Gemini, and other MCP clients
 
 [![npm version](https://badge.fury.io/js/obsidian-http-mcp.svg)](https://www.npmjs.com/package/obsidian-http-mcp)
-[![npm](https://img.shields.io/npm/dw/obsidian-http-mcp)](https://www.npmjs.com/package/obsidian-http-mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub](https://img.shields.io/github/stars/NasAndNora/obsidian-http-mcp?style=social)](https://github.com/NasAndNora/obsidian-http-mcp)
+[![npm](https://img.shields.io/npm/dm/obsidian-http-mcp)](https://www.npmjs.com/package/obsidian-http-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Sponsor](https://img.shields.io/github/sponsors/NasAndNora?style=flat&logo=githubsponsors)](https://github.com/sponsors/NasAndNora)
+
+---
 
 ## Why This Exists
 
 First HTTP-native MCP server for Obsidian. Solves stdio transport failures (BrokenPipeError) affecting Claude Code CLI. HTTP bypasses these issues entirely.
 
-**Performance**: <200ms response, 70% fewer API calls via intelligent cache
+**Fast & efficient**: <200ms response, 70% fewer API calls, MCP-optimized for minimal token usage
 
 ---
 
-## 🚀 Quick Start
+## 🎬 See It In Action
+
+![Obsidian HTTP MCP Demo](./demo.gif)
+
+Claude Code controlling an Obsidian vault via HTTP-native MCP - no stdio bugs, just seamless AI-powered note management
+
+---
+
+## Table of Contents
+
+- [What Makes This Different?](#-what-makes-this-different)
+- [Quick Start](#-quick-start-1-min)
+- [Your Obsidian, Powered by AI](#-your-obsidian-powered-by-ai)
+- [Updating](#-updating)
+- [Command Line Options](#-command-line-options)
+- [Troubleshooting](#-troubleshooting)
+
+## 🎯 What Makes This Different?
+
+**✅ HTTP that works** - No stdio crashes, no BrokenPipeError, no frustration
+
+**⏱️ Lightning fast** - Create, find, edit, and move notes instantly - even with typos
+
+**🛡️ Never lose data** - Built-in protection against accidental deletions
+
+**⚙️ Set up in 1 minute** - No complex configuration, works out of the box
+
+**💪 Built for real use** - Handles thousands of notes without slowdowns
+
+**💸 Token-conscious** - Intelligent design minimizes AI usage costs
+
+---
+
+## ⚡ Quick Start (1 min)
 
 > **💡 New to the codebase?** Ask an AI assistant to guide you: *"Based on README.md and TECHNICAL.md, walk me through how the HTTP-native MCP server works"*
 
@@ -33,6 +69,8 @@ First HTTP-native MCP server for Obsidian. Solves stdio transport failures (Brok
 - Settings → Community Plugins → Search "Local REST API" → Enable
 - Enable "Non encrypted (HTTP) API"
 - **Copy the API key** (you'll need it next)
+
+---
 
 ### STEP 2: Install & Setup
 
@@ -49,6 +87,8 @@ obsidian-http-mcp --setup
 
 > **Cross-platform users:** If your AI runs on WSL2 but Obsidian on Windows, install the server on Windows.
 
+---
+
 ### STEP 3: Start Server
 
 **Where you installed (same system as Obsidian):**
@@ -58,6 +98,8 @@ obsidian-http-mcp
 ```
 
 **⚠️ Keep this terminal running.** After reboot, run `obsidian-http-mcp` again.
+
+---
 
 ### STEP 4: Connect Your AI
 
@@ -79,7 +121,7 @@ ipconfig | findstr "vEthernet"
 ip addr show | grep inet
 ```
 
-2. Connect from **where your AI runs**:
+1. Connect from **where your AI runs**:
 
 ```bash
 claude mcp add -s user --transport http obsidian-http http://SERVER_IP:3000/mcp  # Adapt command to your AI
@@ -116,15 +158,24 @@ obsidian-http-mcp
 
 ---
 
-## 🛠️ Features
+## ✨ Your Obsidian, Powered by AI
 
-**12 MCP Tools**: File operations (read/write/edit/move/delete), search, fuzzy find, directory management
+**No more switching between AI and Obsidian** - Control your vault directly from your AI assistant
 
-**Smart File Search**: Fuzzy matching with typo tolerance, emoji support, 60s cache - solves the problem where AI cannot guess exact filenames
+**Never lose data** - Soft delete protects against accidental AI operations (files moved to `.trash-http-mcp/` by default)
 
-**Safe Deletion**: Soft delete to `.trash-http-mcp/` by default (protects against accidental AI operations)
+**Work at AI speed** - Fuzzy search finds files even with typos, intelligent cache reduces API calls by 70%
 
-**Coming in v1.1**: Multi-vault support - see [ROADMAP.md](./ROADMAP.md)
+**Scale confidently** - Handles 1000+ notes without breaking a sweat (<200ms response time)
+
+**What You Can Do:**
+
+- Read, write, and edit notes seamlessly without leaving your AI conversation
+- Find any file instantly with fuzzy matching ("meeting notes" finds "Meeting-Notes-2024.md")
+- Search across thousands of notes in seconds with full regex support
+- Move, rename, or delete files with built-in safety features
+
+**Coming in v1.1**: Token optimization (partial file reads), native search API - see [ROADMAP.md](./ROADMAP.md)
 
 See [TECHNICAL.md](./TECHNICAL.md) for complete tool specifications and architecture details.
 

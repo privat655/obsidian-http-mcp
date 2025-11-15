@@ -1,7 +1,5 @@
 # Obsidian HTTP MCP Server - Roadmap
 
-**Last Updated**: 2025-11-08
-
 ---
 
 ## 🎯 Vision & Goals
@@ -123,31 +121,7 @@ edit_file({
 
 ---
 
-### v1.0.8 - Tree Tool
-
-**Goal**: Display vault structure as readable tree
-
-**API**:
-```typescript
-tree({ path?: string, max_depth?: number, include_files?: boolean })
-```
-
-**Returns**: ASCII tree visualization
-```
-TECH/
-├── SSH WSL2-Windows Guide.md
-├── Folder1/
-│   └── File.md
-└── Folder2/
-```
-
-**Use case**: Explore vault structure without multiple list_dir calls
-
-**Effort**: ~80 lines, 2 files modified
-
----
-
-### v1.0.9 - Rename Tool
+### v1.0.8 - Rename Tool
 
 **Goal**: Unified tool for renaming files and directories
 
@@ -214,45 +188,62 @@ read_file({ path: string, offset?: number, limit?: number })
 
 ---
 
-#### Feature 2: Native Search API (Performance Critical)
+#### Feature 2: Hybrid Search with Mode Flag (Performance Critical)
 
-Replace manual file walking with Obsidian's native search endpoint
+Add `mode` flag to balance performance vs flexibility
 
 **Current Problem:**
-- Manual implementation: walkVault() → read each file → pattern match
+- Manual implementation: walkVault() → read each file (1000+ GET requests)
 - Performance: 2-3s for 1000 files
-- API calls: 1000+ GET requests
+- `/search/simple/` API available but lacks regex/case-sensitive/max_results
 
 **Solution:**
-Use `POST /search/simple/` endpoint (Obsidian Local REST API v3.0+)
+Hybrid approach with mode flag
 
 **API**:
 ```typescript
 search({
   query: string,
-  contextLength?: number,  // Context chars around match
-  path?: string            // Optional: filter to specific path
+  mode?: "simple" | "advanced",  // Default: "simple"
+  contextLength?: number,         // simple mode only
+  case_sensitive?: boolean,       // advanced mode only
+  regex?: boolean,                // advanced mode only
+  max_results?: number
 })
 ```
 
-**Returns:**
-```json
-[{
-  "filename": "path/to/file.md",
-  "score": 0.95,
-  "matches": [{
-    "match": { "start": 120, "end": 135 },
-    "context": "...text..."
-  }]
-}]
-```
+**Mode Behavior:**
+
+1. **`mode: "simple"`** (default, 60-70% use cases)
+   - Uses `POST /search/simple/` (Obsidian native API)
+   - Literal substring search only
+   - 1 POST request (99% fewer API calls)
+   - ~100ms (95% faster)
+
+2. **`mode: "advanced"`** (30-40% use cases)
+   - Current implementation (walkVault + regex)
+   - Supports: regex patterns, case-sensitive, word boundaries
+   - 1000+ GET requests (slower but flexible)
+   - ~2-3s for 1000 files
+
+**Use Cases by Mode:**
+
+| Use Case | Mode | Why |
+|----------|------|-----|
+| "Find meeting notes" | simple | Literal text |
+| "Find TODO (uppercase only)" | advanced | Case-sensitive |
+| "Find dates YYYY-MM-DD" | advanced | Regex pattern |
+| "Find emails" | advanced | Regex pattern |
+| "Find #hashtags" | simple | Literal text OK |
 
 **Performance impact**:
-- 2-3s → ~100ms (95% faster)
-- 1000+ GET → 1 POST (99% fewer API calls)
-- Native Obsidian indexing + relevance scoring
+- Simple mode: 2-3s → ~100ms (95% faster), 1000+ GET → 1 POST
+- Advanced mode: Same as current (2-3s, but only when needed)
+- AI defaults to simple, switches to advanced when required
 
-**Token impact**: Minimal (response already optimized with context snippets)
+**Token impact**: Minimal (both modes return only matches + context)
+
+**⚠️ Note**: Advanced mode flag needs validation before implementation (verify real use case split).
 
 ---
 
@@ -347,8 +338,6 @@ batchMove({
 
 **User-driven features** (wait for >3 requests):
 
-- Frontmatter tools (`get_frontmatter`, `set_frontmatter`)
-- Tag tools (`add_tags`, `remove_tags`, `list_tags`)
 - Template support
 - Graph tools (backlinks)
 
@@ -484,7 +473,7 @@ read_file({ vault: "work", path: "meeting.md" })
 
 ## 🚧 Known Limitations
 
-### Current Limitations (v1.0.6)
+### Current Limitations
 
 1. **Single vault only** - One Obsidian instance per server (will be fixed in v2.0)
 2. **Text search only** - No semantic/AI-powered search (by design for simplicity)

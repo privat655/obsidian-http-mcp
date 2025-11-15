@@ -1,7 +1,5 @@
 # Technical Specification
 
-**Version**: 1.0.7 | **Updated**: 2025-11-15
-
 ---
 
 ## Stack
@@ -68,7 +66,7 @@
 
 See [SECURITY.md](./SECURITY.md) for deployment checklist.
 
-## Configuration (v1.0.2+)
+## Configuration
 
 **Priority chain:**
 
@@ -113,7 +111,7 @@ src/
 - `axios` - HTTP client
 - `dotenv` - Environment variables
 
-**Zero dependencies added in v1.0.2** (Node.js built-ins only).
+**Zero dependencies added** (Node.js built-ins only).
 
 ## References
 

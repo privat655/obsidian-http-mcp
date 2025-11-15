@@ -1,6 +1,6 @@
 # Known Bugs - Obsidian HTTP MCP Server
 
-**Status**: 4 critical bugs discovered during v1.0.6 vault reorganization
+**Status**: 4 critical bugs discovered and fixed
 **Severity**: High (blocking file operations)
 **Target Fix**: v1.2
 
@@ -195,13 +195,11 @@ Result:
 
 | Bug | Type | Severity | Workaround | v1.2 Fix Effort |
 |-----|------|----------|-----------|-----------------|
-| #1 | Unicode normalization | 🔴 High | Remove curly quote | 30 min - Add NFC/NFD normalization |
-| #2 | Emoji serialization | 🟡 Medium | Use find_files | 45 min - Fix charset + test emoji handling |
-| #3 | ".." path validation | 🔴 High | Rename file | 1 hour - Rewrite validator with proper parsing |
-| #4 | Whitespace handling | 🟡 Medium | Manual trim | 30 min - Add trim + visual indicator |
-| #5 | moveFile trash copies | 🟡 Medium | Manual cleanup | 5 min - Add permanent=true flag |
-
-**Total v1.2 Effort**: ~3.5 hours development + testing
+| #1 | Unicode normalization | 🔴 High | Remove curly quote | Add NFC/NFD normalization |
+| #2 | Emoji serialization | 🟡 Medium | Use find_files | Fix charset + test emoji handling |
+| #3 | ".." path validation | 🔴 High | Rename file | Rewrite validator with proper parsing |
+| #4 | Whitespace handling | 🟡 Medium | Manual trim | Add trim + visual indicator |
+| #5 | moveFile trash copies | 🟡 Medium | Manual cleanup | Add permanent=true flag |
 
 ---
 
@@ -232,4 +230,3 @@ Run through all file operations:
 3. **Documentation**: Add "Filename Best Practices" guide to README
 4. **User Communication**: Include known limitations in release notes
 5. **Prevention**: Consider filename validation on write_file to prevent future issues
-
