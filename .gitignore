@@ -8,3 +8,5 @@ dist/
 
 # Internal docs (not for public repo)
 PersonalDocs/
+BUGS.md
+ROADMAP.md
