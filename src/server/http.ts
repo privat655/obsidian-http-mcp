@@ -296,6 +296,10 @@ export function createHttpServer(client: ObsidianClient, port: number) {
   mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
+    console.log(`[DEBUG] Tool Call: ${name}`);
+    console.log(`[DEBUG] Arguments:`, JSON.stringify(args, null, 2));
+
+    
     let result;
     switch (name) {
       case 'list_dir':
