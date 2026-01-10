@@ -24,11 +24,22 @@ export async function createDirectory(
 
     const { created } = await client.createDirectory(args.path);
 
+    // FIX: Create keep.md to prevent 404 errors on empty folders
+    // The Obsidian API may return 404 if a folder is empty, so we ensure it contains at least one file.
+    if (created) {
+      try {
+        await client.writeFile(`${args.path}/keep.md`, '');
+      } catch (writeError) {
+        console.warn(`Failed to create keep.md in ${args.path}:`, writeError);
+        // We continue even if this fails, as the directory itself was created
+      }
+    }
+
     const data: CreateDirectoryData = {
       path: args.path,
       created,
       message: created
-        ? `Directory created: ${args.path}/`
+        ? `Directory created: ${args.path}/ (initialized with keep.md)`
         : `Directory already exists: ${args.path}/`,
     };
 
