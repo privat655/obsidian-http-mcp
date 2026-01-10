@@ -14,7 +14,7 @@ export async function createDirectory(
       };
     }
 
-    // Validate no trailing slash in user input (we add it)
+    // Validate no trailing slash in user input
     if (args.path.endsWith('/')) {
       return {
         success: false,
@@ -22,31 +22,42 @@ export async function createDirectory(
       };
     }
 
-    const { created } = await client.createDirectory(args.path);
+    // 1. Check if directory exists
+    // We use the fixed directoryExists method you updated in the previous step
+    const exists = await client.directoryExists(args.path);
 
-    // FIX: Create keep.md to prevent 404 errors on empty folders
-    // The Obsidian API may return 404 if a folder is empty, so we ensure it contains at least one file.
-    if (created) {
-      try {
-        await client.writeFile(`${args.path}/keep.md`, '');
-      } catch (writeError) {
-        console.warn(`Failed to create keep.md in ${args.path}:`, writeError);
-        // We continue even if this fails, as the directory itself was created
-      }
+    if (exists) {
+      const data: CreateDirectoryData = {
+        path: args.path,
+        created: false,
+        message: `Directory already exists: ${args.path}/`,
+      };
+      
+      return {
+        success: true,
+        data: data, // Some MCP clients look at data
+        content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+      };
     }
+
+    // 2. Create the directory by creating keep.md
+    // We bypass client.createDirectory() entirely because PUT /vault/folder/ 
+    // throws a 405 Method Not Allowed error on some API versions.
+    // Creating a file implicitly creates the parent directories in Obsidian.
+    await client.writeFile(`${args.path}/keep.md`, '');
 
     const data: CreateDirectoryData = {
       path: args.path,
-      created,
-      message: created
-        ? `Directory created: ${args.path}/ (initialized with keep.md)`
-        : `Directory already exists: ${args.path}/`,
+      created: true,
+      message: `Directory created: ${args.path}/ (initialized with keep.md)`,
     };
 
     return {
       success: true,
-      data,
+      data: data,
+      content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
     };
+
   } catch (error) {
     return {
       success: false,
