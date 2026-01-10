@@ -10,6 +10,8 @@ export interface ToolResult {
   success: boolean;
   data?: unknown;
   error?: string;
+  // Added content to support standard MCP text/image responses
+  content?: any[];
 }
 
 export interface SearchMatch {
