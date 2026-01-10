@@ -59,24 +59,39 @@ export class ObsidianClient {
   async writeFile(path: string, content: string): Promise<void> {
     this.validatePath(path);
     const encoded = this.encodePath(path);
+    
+    // --- DEBUGGING WRAPPER START ---
     try {
-          await this.client.put(`/vault/${encoded}`, content, {
-            headers: { 'Content-Type': 'text/markdown' },
-          });
-        } catch (error: any) {
-          if (error.response) {
-            console.error(`[DEBUG] Obsidian API Error ${error.response.status} for ${path}`);
-            console.error(`[DEBUG] Response Data:`, JSON.stringify(error.response.data, null, 2));
-          }
-          throw error;
-        }
+      await this.client.put(`/vault/${encoded}`, content, {
+        headers: { 'Content-Type': 'text/markdown' },
+      });
+    } catch (error: any) {
+      if (error.response) {
+        console.error(`[DEBUG] Obsidian API Error ${error.response.status} for ${path}`);
+        console.error(`[DEBUG] Response Data:`, JSON.stringify(error.response.data, null, 2));
+      }
+      throw error;
+    }
+    // --- DEBUGGING WRAPPER END ---
+  }
 
   async appendFile(path: string, content: string): Promise<void> {
     this.validatePath(path);
     const encoded = this.encodePath(path);
-    await this.client.patch(`/vault/${encoded}`, content, {
-      headers: { 'Content-Type': 'text/markdown' },
-    });
+    
+    // --- DEBUGGING WRAPPER START ---
+    try {
+      await this.client.patch(`/vault/${encoded}`, content, {
+        headers: { 'Content-Type': 'text/markdown' },
+      });
+    } catch (error: any) {
+      if (error.response) {
+        console.error(`[DEBUG] Obsidian API Error ${error.response.status} for ${path}`);
+        console.error(`[DEBUG] Response Data:`, JSON.stringify(error.response.data, null, 2));
+      }
+      throw error;
+    }
+    // --- DEBUGGING WRAPPER END ---
   }
 
   async deleteFile(path: string): Promise<void> {
