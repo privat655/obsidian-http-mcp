@@ -133,12 +133,17 @@ export class ObsidianClient {
     try {
       const dirPath = path.endsWith('/') ? path : `${path}/`;
       const encoded = this.encodePath(dirPath);
-      await this.client.get(`/vault/${encoded}`, {
+      
+      // FIX: Capture response and verify status is 200
+      const response = await this.client.get(`/vault/${encoded}`, {
         validateStatus: (status) => status === 200 || status === 404,
       });
-      return true;
+      
+      // If status is 200, it exists. If 404, it does not.
+      return response.status === 200;
+      
     } catch (error) {
-      // Only catch 404 (not found) - re-throw auth/server errors
+      // Only catch if actual error (not 404 which is handled above)
       if (error instanceof Error && error.message.includes('404')) {
         return false;
       }
