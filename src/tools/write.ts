@@ -24,20 +24,48 @@ export async function writeFile(
       };
     }
 
-    if (mode === 'append') {
-      await client.appendFile(args.path, args.content);
-    } else {
-      await client.writeFile(args.path, args.content);
+    // Try to write the file
+    try {
+      if (mode === 'append') {
+        await client.appendFile(args.path, args.content);
+      } else {
+        await client.writeFile(args.path, args.content);
+      }
+    } catch (error: any) {
+      // Auto-fix: Create missing parent directories if needed
+      if (error?.response?.status === 400 || error?.response?.status === 404) {
+        const lastSlashIndex = args.path.lastIndexOf('/');
+        if (lastSlashIndex !== -1) {
+          const parentDir = args.path.substring(0, lastSlashIndex);
+          try {
+             console.log(`[Auto-Fix] Creating parent directory: ${parentDir}`);
+             await client.writeFile(`${parentDir}/keep.md`, '');
+             
+             // Retry the write
+             if (mode === 'append') {
+               await client.appendFile(args.path, args.content);
+             } else {
+               await client.writeFile(args.path, args.content);
+             }
+          } catch (retryError) {
+             throw error; // Throw original error if retry fails
+          }
+        } else {
+          throw error;
+        }
+      } else {
+        throw error;
+      }
     }
 
-    // Invalidate cache so new/modified file is immediately discoverable
     invalidateFilesCache();
 
     return {
       success: true,
       data: {
         path: args.path,
-        message: `File ${mode === 'append' ? 'appended' : 'written'} successfully`,
+        // FIX: Include the path in the message so we can return JUST the message to the AI
+        message: `Successfully ${mode === 'append' ? 'appended to' : 'wrote'} file "${args.path}"`,
       },
     };
   } catch (error) {
